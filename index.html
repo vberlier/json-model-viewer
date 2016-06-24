@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html ng-app="app">
+  <head>
+
+    <meta charset="utf-8">
+
+    <style>
+      body {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      #wrapper {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: auto;
+        height: auto;
+        background: rgba(250,250,250,1);
+        background: -moz-radial-gradient(center, ellipse cover, rgba(250,250,250,1) 0%, rgba(235,235,235,1) 74%, rgba(209,209,209,1) 100%);
+        background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(250,250,250,1)), color-stop(74%, rgba(235,235,235,1)), color-stop(100%, rgba(209,209,209,1)));
+        background: -webkit-radial-gradient(center, ellipse cover, rgba(250,250,250,1) 0%, rgba(235,235,235,1) 74%, rgba(209,209,209,1) 100%);
+        background: -o-radial-gradient(center, ellipse cover, rgba(250,250,250,1) 0%, rgba(235,235,235,1) 74%, rgba(209,209,209,1) 100%);
+        background: -ms-radial-gradient(center, ellipse cover, rgba(250,250,250,1) 0%, rgba(235,235,235,1) 74%, rgba(209,209,209,1) 100%);
+        background: radial-gradient(ellipse at center, rgba(250,250,250,1) 0%, rgba(235,235,235,1) 74%, rgba(209,209,209,1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fafafa', endColorstr='#d1d1d1', GradientType=1 );
+      }
+    </style>
+
+    <title>Animated models - Fizzy</title>
+
+  </head>
+  <body>
+
+    <div id="wrapper">
+
+      <!-- Viewer goes there -->
+
+    </div>
+
+    <!-- Requires three.js and OrbitControls.js -->
+    <script src="js/three.min.js"></script>
+    <script src="js/OrbitControls.js"></script>
+
+    <!-- Import ModelViewer.js -->
+    <script src="js/ModelViewer.js"></script>
+
+    <script type="text/javascript">
+
+      var container = document.getElementById('wrapper')
+      var viewer = new ModelViewer(container)
+
+      window.addEventListener('resize', viewer.resize)
+
+      
+
+
+    </script>
+
+  </body>
+</html>
