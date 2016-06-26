@@ -4,28 +4,6 @@ var degres = Math.PI / 180
 
 
 /**
- *  Exceptions
- *****************************/
-
-function ModelGenerationError(message) {
-  this.name = 'ModelGenerationError'
-  this.message = message || "Couldn't generate model."
-  this.stack = (new Error()).stack
-}
-ModelGenerationError.prototype = Object.create(Error.prototype)
-ModelGenerationError.prototype.constructor = ModelGenerationError
-
-function ModelLoadingError(message) {
- this.name = 'ModelLoadingError'
- this.message = message || "Couldn't load model."
- this.stack = (new Error()).stack
-}
-ModelLoadingError.prototype = Object.create(Error.prototype)
-ModelLoadingError.prototype.constructor = ModelLoadingError
-
-
-
-/**
  *  ModelViewer
  *****************************/
 
@@ -144,14 +122,80 @@ function ModelViewer(container) {
 
   // loadModel
 
-  this.loadModel = function(name, model) {
+  this.loadModel = function(model) {
+
+    var name = model.modelName
 
     if (Object.keys(self.models).indexOf(name) >= 0)
-      throw new ModelLoadingError('Model "' + name + '" is already loaded.')
+      throw 'Model "' + name + '" is already loaded.'
 
     self.models[name] = model
     self.scene.add(model)
 
+    self.draw()
+
+    return self
+
+  }
+
+
+  // getModel
+
+  this.getModel = function(name) {
+
+    if (!(Object.keys(self.models).indexOf(name) >= 0))
+      throw 'Model "' + name + '" is not loaded.'
+
+    return self.models[name]
+
+  }
+
+
+  // removeModel
+
+  this.removeModel = function(name) {
+
+    if (!(Object.keys(self.models).indexOf(name) >= 0))
+      throw 'Model "' + name + '" is not loaded.'
+
+    delete self.models[name]
+
+    for (var i = 0; i < self.scene.children.length; i++) {
+      var child = self.scene.children[i]
+      if (child instanceof JsonModel && child.modelName == name) {
+        self.scene.remove(child)
+        break
+      }
+    }
+
+    self.draw()
+
+    return self
+
+  }
+
+
+  // hide
+
+  this.hide = function(name) {
+
+    if (!(Object.keys(self.models).indexOf(name) >= 0))
+      throw 'Model "' + name + '" is not loaded.'
+
+    self.models[name].visible = false
+    self.draw()
+
+  }
+
+
+  // show
+
+  this.show = function(name) {
+
+    if (!(Object.keys(self.models).indexOf(name) >= 0))
+      throw 'Model "' + name + '" is not loaded.'
+
+    self.models[name].visible = true
     self.draw()
 
   }
@@ -165,7 +209,7 @@ function ModelViewer(container) {
  *  JsonModel
  *****************************/
 
-function JsonModel(rawModel, texturesReference) {
+function JsonModel(name, rawModel, texturesReference) {
 
 
   // parent constructor
@@ -173,12 +217,17 @@ function JsonModel(rawModel, texturesReference) {
   THREE.Object3D.call(this)
 
 
+  // set modelName
+
+  this.modelName = name
+
+
   // parse model or throw an error if parsing fails
 
   try {
     var model = JSON.parse(rawModel)
   } catch (e) {
-    throw new ModelGenerationError('Couldn\'t parse json model. ' + e.message + '.')
+    throw 'Couldn\'t parse json model. ' + e.message + '.'
   }
 
 
@@ -207,14 +256,14 @@ function JsonModel(rawModel, texturesReference) {
       if (reference.name == textureName) {
         textures[key] = reference.texture
       } else {
-        throw new ModelGenerationError('Couldn\'t find matching texture for texture reference "' + textureName + '".')
+        throw 'Couldn\'t find matching texture for texture reference "' + textureName + '".'
       }
 
     })
 
   } else {
 
-    throw new ModelGenerationError('Couldn\'t find "textures" property.')
+    throw 'Couldn\'t find "textures" property.'
 
   }
 
@@ -226,7 +275,7 @@ function JsonModel(rawModel, texturesReference) {
   if (model.hasOwnProperty('elements')) {
     elements = model.elements
   } else {
-    throw new ModelGenerationError('Couldn\'t find "elements" property')
+    throw 'Couldn\'t find "elements" property'
   }
 
 
@@ -240,20 +289,20 @@ function JsonModel(rawModel, texturesReference) {
     // check properties
 
     if (!element.hasOwnProperty('from'))
-      throw new ModelGenerationError('Couldn\'t find "from" property for element "' + index + '".')
+      throw 'Couldn\'t find "from" property for element "' + index + '".'
     if (!(element['from'].length == 3))
-      throw new ModelGenerationError('"from" property for element "' + index + '" is invalid.')
+      throw '"from" property for element "' + index + '" is invalid.'
 
     if (!element.hasOwnProperty('to'))
-      throw new ModelGenerationError('Couldn\'t find "to" property for element "' + index + '".')
+      throw 'Couldn\'t find "to" property for element "' + index + '".'
     if (!(element['to'].length == 3))
-      throw new ModelGenerationError('"to" property for element "' + index + '" is invalid.')
+      throw '"to" property for element "' + index + '" is invalid.'
 
     for (var i = 0; i < 3; i++) {
       var f = element['from'][i]
       var t = element['to'][i]
       if (t - f < 0)
-        throw new ModelGenerationError('"from" property is bigger than "to" property for coordinate "' + ['x', 'y', 'z'][i] + '" in element "' + index + '".')
+        throw '"from" property is bigger than "to" property for coordinate "' + ['x', 'y', 'z'][i] + '" in element "' + index + '".'
     }
 
 
@@ -288,19 +337,19 @@ function JsonModel(rawModel, texturesReference) {
       // check properties
 
       if (!element.rotation.hasOwnProperty('origin'))
-        throw new ModelGenerationError('Couldn\'t find "origin" property in "rotation" for element "' + index + '".')
+        throw 'Couldn\'t find "origin" property in "rotation" for element "' + index + '".'
       if (!(element.rotation.origin.length == 3))
-        throw new ModelGenerationError('"origin" property in "rotation" for element "' + index + '" is invalid.')
+        throw '"origin" property in "rotation" for element "' + index + '" is invalid.'
 
       if (!element.rotation.hasOwnProperty('axis'))
-        throw new ModelGenerationError('Couldn\'t find "axis" property in "rotation" for element "' + index + '".')
+        throw 'Couldn\'t find "axis" property in "rotation" for element "' + index + '".'
       if (!((['x', 'y', 'z']).indexOf(element.rotation.axis) >= 0))
-        throw new ModelGenerationError('"axis" property in "rotation" for element "' + index + '" is invalid.')
+        throw '"axis" property in "rotation" for element "' + index + '" is invalid.'
 
       if (!element.rotation.hasOwnProperty('angle'))
-        throw new ModelGenerationError('Couldn\'t find "angle" property in "rotation" for element "' + index + '".')
+        throw 'Couldn\'t find "angle" property in "rotation" for element "' + index + '".'
       if (!(([45, 22.5, 0, -22.5, -45]).indexOf(element.rotation.angle) >= 0))
-        throw new ModelGenerationError('"angle" property in "rotation" for element "' + index + '" is invalid.')
+        throw '"angle" property in "rotation" for element "' + index + '" is invalid.'
 
 
       // get origin, axis and angle

@@ -29,7 +29,7 @@
       }
     </style>
 
-    <title>Animated models - Fizzy</title>
+    <title>Minecraft json model viewer - Fizzy</title>
 
   </head>
   <body>
@@ -49,7 +49,7 @@
 
     <script type="text/javascript">
 
-      var model = `{
+      var json = `{
           "__comment": "Model generated using MrCrayfish's Model Creator (http://mrcrayfish.com/modelcreator/)",
           	"__comment": "Model designed by fizzy81 for the Phoenix Projects",
               "textures": {
@@ -1277,15 +1277,9 @@
       window.addEventListener('resize', viewer.resize)
 
 
-      var model = new JsonModel(model, [{name: 'malfa', texture: texture}])
+      var model = new JsonModel('malfa', json, [{name: 'malfa', texture: texture}])
 
-      viewer.loadModel('malfa', model)
-
-      // viewer.getModel(name)
-      // viewer.removeModel(name)
-      //
-      // model.hide()
-      // model.show()
+      viewer.loadModel(model)
 
 
 
