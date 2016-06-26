@@ -43,7 +43,7 @@ All textures referenced in the json model must be passed in parameter with the c
 
 For instance, if the `textures` property of a model looks like this:
 
-```json
+```javascript
 {
     "textures": {
         "0": "blocks/dirt",
