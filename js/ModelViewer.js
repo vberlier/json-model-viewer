@@ -1,8 +1,5 @@
 
 
-var degres = Math.PI / 180
-
-
 /**
  *  ModelViewer
  *****************************/
@@ -129,8 +126,8 @@ function ModelViewer(container) {
     if (Object.keys(self.models).indexOf(name) >= 0)
       throw 'Model "' + name + '" is already loaded.'
 
-    self.models[name] = model
     self.scene.add(model)
+    self.models[name] = model
 
     self.draw()
 
@@ -234,6 +231,7 @@ function JsonModel(name, rawModel, texturesReference) {
   // get textures or throw an error if the "textures" property can't be found
 
   var textures = {}
+  var references = []
 
   if (model.hasOwnProperty('textures')) {
 
@@ -255,6 +253,7 @@ function JsonModel(name, rawModel, texturesReference) {
       // register the texture or throw an error if the name wasn't in the textures passed in parameter
       if (reference.name == textureName) {
         textures[key] = reference.texture
+        references.push(key)
       } else {
         throw 'Couldn\'t find matching texture for texture reference "' + textureName + '".'
       }
@@ -266,6 +265,25 @@ function JsonModel(name, rawModel, texturesReference) {
     throw 'Couldn\'t find "textures" property.'
 
   }
+
+
+  // generate material
+
+  var materials = []
+
+  references.forEach(function(ref, index) {
+    var loader = new THREE.TextureLoader()
+    var texture = loader.load(textures[ref])
+    texture.magFilter = THREE.NearestFilter
+    materials.push(new THREE.MeshLambertMaterial({map: texture, transparent: true}))
+  })
+
+  var transparentMaterial = new THREE.MeshBasicMaterial({transparent: true, opacity: 0})
+
+  materials.push(transparentMaterial)
+
+  var material = new THREE.MeshFaceMaterial(materials)
+
 
 
   // get elements or throw an error if the "elements" property can't be found
@@ -301,6 +319,10 @@ function JsonModel(name, rawModel, texturesReference) {
     for (var i = 0; i < 3; i++) {
       var f = element['from'][i]
       var t = element['to'][i]
+      if (typeof f != 'number' || f < -16)
+        throw '"from" property for element "' + index + '" is invalid (got "' + f + '" for coordinate "' + ['x', 'y', 'z'][i] + '").'
+      if (typeof t != 'number' || t > 32)
+        throw '"to" property for element "' + index + '" is invalid (got "' + t + '" for coordinate "' + ['x', 'y', 'z'][i] + '").'
       if (t - f < 0)
         throw '"from" property is bigger than "to" property for coordinate "' + ['x', 'y', 'z'][i] + '" in element "' + index + '".'
     }
@@ -319,11 +341,124 @@ function JsonModel(name, rawModel, texturesReference) {
     }
 
 
+    // create geometry
+
+    var fix = 0.001 // if a value happens to be 0, the geometry becomes a plane and has 4 vertices instead of 12.
+
+    var geometry = new THREE.BoxGeometry(width + fix, height + fix, length + fix)
+    geometry.faceVertexUvs[0] = []
+
+
+    // assign materials
+
+    if (element.hasOwnProperty('faces')) {
+
+      var faces = ['east', 'west', 'up', 'down', 'south', 'north']
+
+      for (var i = 0; i < 6; i++) {
+
+        var face = faces[i]
+
+        if (element.faces.hasOwnProperty(face)) {
+
+
+          // check properties
+
+          if (!element.faces[face].hasOwnProperty('texture'))
+            throw 'Couldn\'t find "texture" property in for "' + face + '" face in element "' + index + '".'
+          if (!element.faces[face].hasOwnProperty('uv'))
+            throw 'Couldn\'t find "uv" property in for "' + face + '" face in element "' + index + '".'
+          if (element.faces[face].uv.length != 4)
+            throw 'The "uv" property in for "' + face + '" face in element "' + index + '" is invalid (got "' + element.faces[face].uv + '").'
+
+
+          // get texture index
+
+          var ref = element.faces[face].texture
+          var textureIndex = references.indexOf(ref.startsWith('#') ? ref.substring(1) : ref)
+
+
+          // check if texture has been registered
+
+          if (textureIndex < 0)
+            throw 'The "texture" property in for "' + face + '" face in element "' + index + '" is invalid (got "' + ref + '").'
+
+          geometry.faces[i*2].materialIndex = textureIndex
+          geometry.faces[i*2+1].materialIndex = textureIndex
+
+
+          // uv map
+
+          var uv = element.faces[face].uv
+
+
+          // check
+
+          uv.forEach(function(e, pos) {if (typeof e != 'number' || e < 0 || e > 16) throw 'The "uv" property in for "' + face + '" face in element "' + index + '" is invalid (got "' + e + '" at index "' + pos + '").'})
+
+          uv = uv.map(function(e) {return e/16})
+
+          // fix edges
+          uv[0] += 0.0005
+          uv[1] += 0.0005
+          uv[2] -= 0.0005
+          uv[3] -= 0.0005
+
+          var map = [
+            new THREE.Vector2(uv[0], 1-uv[1]),
+            new THREE.Vector2(uv[0], 1-uv[3]),
+            new THREE.Vector2(uv[2], 1-uv[3]),
+            new THREE.Vector2(uv[2], 1-uv[1])
+          ]
+
+          if (element.faces[face].hasOwnProperty('rotation')) {
+
+            var amount = element.faces[face].rotation
+
+            // check property
+
+            if (!([0, 90, 180, 270].indexOf(amount) >= 0))
+              throw 'The "rotation" property in for "' + face + '" face in element "' + index + '" is invalid (got "' + amount + '").'
+
+            // rotate map
+
+            for (var j = 0; j < amount/90; j++) {
+              map = [map[1], map[2], map[3], map[0]]
+            }
+
+          }
+
+          geometry.faceVertexUvs[0][i*2] = [map[0], map[1], map[3]]
+          geometry.faceVertexUvs[0][i*2+1] = [map[1], map[2], map[3]]
+
+
+        } else {
+
+          // transparent material
+
+          geometry.faces[i*2].materialIndex = references.length
+          geometry.faces[i*2+1].materialIndex = references.length
+
+          var map = [
+            new THREE.Vector2(0, 0),
+            new THREE.Vector2(1, 0),
+            new THREE.Vector2(1, 1),
+            new THREE.Vector2(0, 1)
+          ]
+
+          geometry.faceVertexUvs[0][i*2] = [map[0], map[1], map[3]]
+          geometry.faceVertexUvs[0][i*2+1] = [map[1], map[2], map[3]]
+
+        }
+
+      }
+
+    }
+
+
     // create mesh
 
-    var geometry = new THREE.BoxGeometry(width, height, length)
-
-    var mesh = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({color: 0x55a6e8}))
+    var mesh = new THREE.Mesh(geometry, material)
     mesh.position.x = origin.x
     mesh.position.y = origin.y
     mesh.position.z = origin.z
@@ -384,11 +519,11 @@ function JsonModel(name, rawModel, texturesReference) {
       // rotate pivot
 
       if (axis == 'x')
-        pivot.rotateX(angle * degres)
+        pivot.rotateX(angle * Math.PI/180)
       else if (axis == 'y')
-        pivot.rotateY(angle * degres)
+        pivot.rotateY(angle * Math.PI/180)
       else if (axis == 'z')
-        pivot.rotateZ(angle * degres)
+        pivot.rotateZ(angle * Math.PI/180)
 
 
       // add pivot
@@ -397,10 +532,13 @@ function JsonModel(name, rawModel, texturesReference) {
 
     } else {
 
+      var pivot = new THREE.Group()
+      pivot.add(mesh)
 
-      // add mesh
 
-      group.add(mesh)
+      // add pivot
+
+      group.add(pivot)
 
     }
 
