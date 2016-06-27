@@ -25,11 +25,16 @@ Use `new ModelViewer(element)` to create a new viewer. `element` must be a DOM e
 Method          | Description
 --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------
 `.load(model)`  | Loads a model in the viewer. `model` must be a `JsonModel` object.
-`.get(name)`    | Retrieves the model with the name `name`.
+`.get(name)`    | Returns the model with the name `name`.
+`.getAll()`     | Returns an Array with all the loaded models.
 `.remove(name)` | Removes the model with the name `name`.
+`.removeAll()`  | Removes all the loaded models.
 `.hide(name)`   | Sets the `visible` property to `false` for the model with the name `name`.
+`.hideAll()`    | Sets the `visible` property to `false` for all the loaded models.
 `.show(name)`   | Sets the `visible` property to `true` for the model with the name `name`.
+`.showAll()`    | Sets the `visible` property to `true` for all the loaded models.
 `.resize()`     | Updates the size and the aspect ratio of the viewer. Usualy bound to the `resize` event of the `window` when the viewer takes the whole page.
+`.reset()`      | Updates the size and the aspect ratio of the viewer. Usualy bound to the `resize` event of the `window` when the viewer takes the whole page.
 
 ### JsonModel(name, json, textures)
 

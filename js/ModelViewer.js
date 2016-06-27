@@ -57,20 +57,22 @@ function ModelViewer(container) {
   var self = this
 
 
-  // animate
-
-  this.animate = function() {
-
-    requestAnimationFrame(self.animate)
-    self.controls.update()
-
-  }
-
-
   // draw
 
   this.draw = function() {
     self.renderer.render(self.scene, self.camera)
+  }
+
+
+  // animate
+
+  this.animate = function() {
+
+    window.requestAnimationFrame(self.animate)
+    self.controls.update()
+
+    self.draw()
+
   }
 
 
@@ -85,8 +87,6 @@ function ModelViewer(container) {
 
     self.renderer.setSize(rect.width, rect.height)
 
-    self.draw()
-
   }
 
 
@@ -99,12 +99,15 @@ function ModelViewer(container) {
   // controls
 
   this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement)
-  this.controls.addEventListener('change', this.draw)
+  this.controls.enableDamping = true
+  this.controls.dampingFactor = 0.2
+  this.controls.zoomSpeed = 1.4
+  this.controls.rotateSpeed = 0.6
+
+
+  // append viewer
 
   this.element.appendChild(this.renderer.domElement)
-
-
-  this.draw()
 
 
   // models
@@ -129,8 +132,6 @@ function ModelViewer(container) {
     self.scene.add(model)
     self.models[name] = model
 
-    self.draw()
-
     return self
 
   }
@@ -148,9 +149,18 @@ function ModelViewer(container) {
   }
 
 
-  // removeModel
+  // getAll
 
-  this.removeModel = function(name) {
+  this.getAll = function() {
+
+    return Object.keys(self.models).map(function(name) {return self.models[name]})
+
+  }
+
+
+  // remove
+
+  this.remove = function(name) {
 
     if (!(Object.keys(self.models).indexOf(name) >= 0))
       throw 'Model "' + name + '" is not loaded.'
@@ -165,7 +175,23 @@ function ModelViewer(container) {
       }
     }
 
-    self.draw()
+    return self
+
+  }
+
+
+  // removeAll
+
+  this.removeAll = function() {
+
+    for (var i = 0; i < self.scene.children.length; i++) {
+      var child = self.scene.children[i]
+      if (child instanceof JsonModel) {
+        self.scene.remove(child)
+      }
+    }
+
+    self.models = {}
 
     return self
 
@@ -185,6 +211,19 @@ function ModelViewer(container) {
   }
 
 
+  // hideAll
+
+  this.hideAll = function() {
+
+    Object.keys(self.models).forEach(function(name) {
+      self.models[name].visible = false
+    })
+
+    return self
+
+  }
+
+
   // show
 
   this.show = function(name) {
@@ -196,6 +235,31 @@ function ModelViewer(container) {
     self.draw()
 
   }
+
+
+  // showAll
+
+  this.showAll = function() {
+
+    Object.keys(self.models).forEach(function(name) {
+      self.models[name].visible = true
+    })
+
+    return self
+
+  }
+
+
+  // reset
+
+  this.reset = function() {
+
+    self.controls.reset()
+
+  }
+
+
+  this.animate()
 
 
 }
