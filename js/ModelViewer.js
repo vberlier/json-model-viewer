@@ -103,6 +103,7 @@ function ModelViewer(container) {
   this.controls.dampingFactor = 0.2
   this.controls.zoomSpeed = 1.4
   this.controls.rotateSpeed = 0.6
+  this.controls.enableKeys = false
 
 
   // append viewer
