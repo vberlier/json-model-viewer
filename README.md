@@ -22,19 +22,23 @@ Use `new ModelViewer(element)` to create a new viewer. `element` must be a DOM e
 
 #### Methods
 
-Method          | Description
---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------
-`.load(model)`  | Loads a model in the viewer. `model` must be a `JsonModel` object.
-`.get(name)`    | Returns the model with the name `name`.
-`.getAll()`     | Returns an Array with all the loaded models.
-`.remove(name)` | Removes the model with the name `name`.
-`.removeAll()`  | Removes all the loaded models.
-`.hide(name)`   | Sets the `visible` property to `false` for the model with the name `name`.
-`.hideAll()`    | Sets the `visible` property to `false` for all the loaded models.
-`.show(name)`   | Sets the `visible` property to `true` for the model with the name `name`.
-`.showAll()`    | Sets the `visible` property to `true` for all the loaded models.
-`.resize()`     | Updates the size and the aspect ratio of the viewer. Usualy bound to the `resize` event of the `window` when the viewer takes the whole page.
-`.reset()`      | Updates the size and the aspect ratio of the viewer. Usualy bound to the `resize` event of the `window` when the viewer takes the whole page.
+Method                 | Description
+---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------
+`.load(model)`         | Loads a model in the viewer. `model` must be a `JsonModel` object.
+`.get(name)`           | Returns the model with the name `name`.
+`.getAll()`            | Returns an Array with all the loaded models.
+`.remove(name)`        | Removes the model with the name `name`.
+`.removeAll()`         | Removes all the loaded models.
+`.hide(name)`          | Sets the `visible` property to `false` for the model with the name `name`.
+`.hideAll()`           | Sets the `visible` property to `false` for all the loaded models.
+`.show(name)`          | Sets the `visible` property to `true` for the model with the name `name`.
+`.showAll()`           | Sets the `visible` property to `true` for all the loaded models.
+`.lookAt(name)`        | Moves the camera toward the model with the name `name`.
+`.showGrid()`          | Displays the grid 16x16 floor grid.
+`.hideGrid()`          | Hides the grid 16x16 floor grid.
+`.setGridColor(color)` | Sets the grid color. `color` must be a number, usually written in hexadecimal (i.e. red: 0xff0000).
+`.resize()`            | Updates the size and the aspect ratio of the viewer. Usualy bound to the `resize` event of the `window` when the viewer takes the whole page.
+`.reset()`             | Updates the size and the aspect ratio of the viewer. Usualy bound to the `resize` event of the `window` when the viewer takes the whole page.
 
 ### JsonModel(name, json, textures)
 
@@ -77,3 +81,7 @@ The `texture` property must be the image dataURL of the corresponding texture.
 #### Methods
 
 `JsonModel` objects inherit from `THREE.Object3D`, see the [three.js documentation](http://threejs.org/docs/index.html#Reference/Core/Object3D) for more information.
+
+Method         | Description
+-------------- | ---------------------------------------------------------------------------
+`.getCenter()` | Returns the center of the model's bounding box as a `THREE.Vector3` object.

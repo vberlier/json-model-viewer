@@ -3,9 +3,13 @@
   <head>
 
     <meta charset="utf-8">
+    <!-- <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'> -->
 
     <style>
       body {
+        font-family: 'Roboto', arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
         position: absolute;
         width: 100%;
         height: 100%;
@@ -27,6 +31,99 @@
         background: radial-gradient(ellipse at center, rgba(250,250,250,1) 0%, rgba(235,235,235,1) 74%, rgba(209,209,209,1) 100%);
         filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fafafa', endColorstr='#d1d1d1', GradientType=1 );
       }
+
+      /* top right section */
+      .topright {
+        display: inline-block;
+        position: absolute;
+        right: 0;
+        margin: 15px;
+        background-color: #fff;
+        padding: 30px;
+        text-align: right;
+        color: #888;
+        border-radius: 5px;
+        box-shadow: 0px 1px 8px -2px rgba(0,0,0,0.4);
+      }
+      h1 {
+        margin: 0;
+        font-size: 1.1em;
+        font-weight: normal;
+      }
+      a {
+        color: #4996c7;
+        display: inline-block;
+        text-decoration: none;
+        -webkit-transition: all 0.16s ease-out;
+        -o-transition: all 0.16s ease-out;
+        transition: all 0.16s ease-out;
+        cursor: pointer;
+      }
+      a:hover {
+        color: #1d519f;
+      }
+      section {
+        margin-top: 30px;
+        text-align: left;
+      }
+      table {
+        width: 100%;
+      }
+      table, th, td {
+        border: 1px #cfcfcf solid;
+        border-collapse: collapse;
+      }
+      th, td {
+        padding: 5px 10px;
+      }
+      tr:first-child {
+        width: 60%;
+      }
+      table.noborder, table.noborder th, table.noborder td {
+        border: none;
+      }
+      input {
+        display: inline-block;
+        vertical-align: middle;
+        margin-left: 16px;
+        -webkit-appearance: button;
+        font-size: 0.9em;
+        font-family: monospace;
+        color: #999;
+        max-width: 86px;
+        min-width: 18px;
+        height: 18px;
+        padding: 2px;
+        background: white;
+        border: 1px #cfcfcf solid;
+        box-shadow: 0px 1px 5px -3px rgba(0,0,0,0.4);
+        border-radius: 2px;
+        -webkit-transform: translateY(-3px);
+        -ms-transform: translateY(-3px);
+        -o-transform: translateY(-3px);
+        transform: translateY(-3px);
+        overflow: hidden;
+      }
+      ::selection {
+        background-color: #1abaec;
+        color: white;
+      }
+      :focus {
+        outline: none;
+      }
+      input[type=radio] {
+        border-radius: 50px;
+      }
+      input[type=radio]:checked {
+        background: rgba(153,153,153,1);
+        background: -moz-radial-gradient(center, ellipse cover, rgba(153,153,153,1) 0%, rgba(153,153,153,1) 40%, rgba(255,255,255,1) 46%, rgba(255,255,255,1) 100%);
+        background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%, rgba(153,153,153,1)), color-stop(40%, rgba(153,153,153,1)), color-stop(46%, rgba(255,255,255,1)), color-stop(100%, rgba(255,255,255,1)));
+        background: -webkit-radial-gradient(center, ellipse cover, rgba(153,153,153,1) 0%, rgba(153,153,153,1) 40%, rgba(255,255,255,1) 46%, rgba(255,255,255,1) 100%);
+        background: -o-radial-gradient(center, ellipse cover, rgba(153,153,153,1) 0%, rgba(153,153,153,1) 40%, rgba(255,255,255,1) 46%, rgba(255,255,255,1) 100%);
+        background: -ms-radial-gradient(center, ellipse cover, rgba(153,153,153,1) 0%, rgba(153,153,153,1) 40%, rgba(255,255,255,1) 46%, rgba(255,255,255,1) 100%);
+        background: radial-gradient(ellipse at center, rgba(153,153,153,1) 0%, rgba(153,153,153,1) 40%, rgba(255,255,255,1) 46%, rgba(255,255,255,1) 100%);
+        filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#999999', endColorstr='#ffffff', GradientType=1 );
+      }
     </style>
 
     <title>Minecraft json model viewer - Fizzy</title>
@@ -38,6 +135,57 @@
 
       <!-- Viewer goes there -->
 
+    </div>
+
+    <div class="topright">
+      <h1>Minecraft json model viewer - <a href="https://github.com/fizzy81">Fizzy</a></h1>
+      <a href="https://github.com/fizzy81/json-model-viewer">Repository</a>
+      <section>
+        <table>
+          <tr>
+            <th colspan="2">
+              Controls
+            </th>
+          </tr>
+          <tr>
+            <td>Left-click</td><td>Rotate</td>
+          </tr>
+          <tr>
+            <td>Right-click</td><td>Move</td>
+          </tr>
+          <tr>
+            <td>Scroll</td><td>Zoom</td>
+          </tr>
+        </table>
+      </section>
+      <section>
+        <p><b>Grid options</b></p>
+        <ul>
+          <li>
+            <p>
+              Show grid <label for="showgrid"><input type="radio" checked id="showgrid" name="grid" value="true" onchange="this.value == 'true' ? viewer.showGrid() : viewer.hideGrid()"> Yes</label><label for="hidegrid"><input type="radio" id="hidegrid" name="grid" value="false" onchange="this.value == 'true' ? viewer.showGrid() : viewer.hideGrid()"> No</label>
+            </p>
+          </li>
+          <li>
+            <p>
+              <label for="gridcolor">Grid color <input type="text" id="gridcolor" value="afafaf" onchange="if (this.value.match(/^[a-f0-9]{6}$/)) viewer.setGridColor(eval('0x' + this.value))"></label>
+            </p>
+          </li>
+        </ul>
+      <p><b>Camera</b></p>
+      <ul>
+        <li>
+          <p>
+            <a onclick="viewer.reset()">Reset camera</a>
+          </p>
+        </li>
+        <li>
+          <p>
+            <a onclick="viewer.lookAt('myModel')">Target model</a>
+          </p>
+        </li>
+      </ul>
+    </section>
     </div>
 
     <!-- Requires three.js and OrbitControls.js -->
@@ -54,12 +202,14 @@
       var container = document.getElementById('wrapper')
       var viewer = new ModelViewer(container)
 
+      console.log(viewer)
+
       window.addEventListener('resize', viewer.resize)
 
 
       var model = new JsonModel('myModel', json, [{name: 'cluckalor', texture: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAYdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuOWwzfk4AAAGhSURBVHhe7ZVJSwNBEIXnVwhBDwbxogfBi6i44ME/70ZiCDhkD9lXErJMZoZnXjENXj1O5n3QFNU9NLxXVT1ev99Ht9vFcDhEq9XCbDZDrVYD911cLpfYbDZ2FkURRqMRVquVnXtphwI7nY4t3/cxHo9Rr9fNEGfAYrGw1ev1EASBfUNDDsIAiqCgZrNplWVO8Y1GA5PJxPYoejqdYrvdWk7xPNvtduk3gEJd2zOy+oztdtuMoFDX9ow0i3E+n5sRyTXphSJZ/b8zz3wwGNibQJGsPmfezT7z9XptRiXXpBcawKqzotVq1apeqVRMnDOAVY/j2M6Y0xx2wUEYQPH8C7jZZ06BNIMVp3j+BdzsM2f1+S3fhOSa9ELhbGlWnfPO6HKK5grD0Ezho8fo8oMwIJ/Po3h5gvLVKd7Pj/BzfZZ+Uf8hl8uZ+MLFsRnBlRxlAxQeELzdIPy4Rfx1ny3xBN9PsFV6BoqPGTRg3wFmQPklox2wFx593gH+q8VkWwghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQohU4nm/DIEkl8+oemoAAAAASUVORK5CYII='}])
 
-      viewer.loadModel(model)
+      viewer.load(model)
 
 
 

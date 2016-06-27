@@ -39,16 +39,16 @@ function ModelViewer(container) {
 
   var light
 
-  light = new THREE.DirectionalLight(0x232323)
-  light.position.set(8, 10, 9)
+  light = new THREE.DirectionalLight(0x080808)
+  light.position.set(2, 10, 1)
   this.scene.add(light)
 
-  light = new THREE.DirectionalLight(0x161616)
-  light.position.set(-8, -7, -9)
+  light = new THREE.DirectionalLight(0x040404)
+  light.position.set(1, 8, -2)
   this.scene.add(light)
 
 
-  light = new THREE.AmbientLight(0xe6e6e6)
+  light = new THREE.AmbientLight(0xf3f3f3)
   this.scene.add(light)
 
 
@@ -121,9 +121,9 @@ function ModelViewer(container) {
   var self = this
 
 
-  // loadModel
+  // load
 
-  this.loadModel = function(model) {
+  this.load = function(model) {
 
     var name = model.modelName
 
@@ -138,9 +138,9 @@ function ModelViewer(container) {
   }
 
 
-  // getModel
+  // get
 
-  this.getModel = function(name) {
+  this.get = function(name) {
 
     if (!(Object.keys(self.models).indexOf(name) >= 0))
       throw 'Model "' + name + '" is not loaded.'
@@ -256,6 +256,71 @@ function ModelViewer(container) {
   this.reset = function() {
 
     self.controls.reset()
+
+  }
+
+
+  // lookAt
+
+  this.lookAt = function(name) {
+
+    var model = self.get(name)
+    self.controls.target = model.getCenter()
+
+
+  }
+
+
+  // create grid
+
+  var gridGeometry = new THREE.Geometry()
+  var gridMaterial = new THREE.LineBasicMaterial({color: 0xafafaf})
+
+  for (var i = -8; i <= 8; i++) {
+
+      gridGeometry.vertices.push(new THREE.Vector3(-8, -8, i))
+      gridGeometry.vertices.push(new THREE.Vector3(8, -8, i))
+
+      gridGeometry.vertices.push(new THREE.Vector3(i, -8, -8))
+      gridGeometry.vertices.push(new THREE.Vector3(i, -8, 8))
+
+  }
+
+  var grid = new THREE.LineSegments(gridGeometry, gridMaterial)
+  grid.visible = true
+
+  this.scene.add(grid)
+  this.grid = grid
+
+
+  // grid methods
+
+  var self = this
+
+
+  // showGrid
+
+  this.showGrid = function() {
+
+    self.grid.visible = true
+
+  }
+
+
+  // hideGrid
+
+  this.hideGrid = function() {
+
+    self.grid.visible = false
+
+  }
+
+
+  // setGridColor
+
+  this.setGridColor = function(color) {
+
+    self.grid.material.color = new THREE.Color(color)
 
   }
 
@@ -440,7 +505,7 @@ function JsonModel(name, rawModel, texturesReference) {
           // get texture index
 
           var ref = element.faces[face].texture
-          var textureIndex = references.indexOf(ref.startsWith('#') ? ref.substring(1) : ref)
+          var textureIndex = references.indexOf(ref[0] == '#' ? ref.substring(1) : ref)
 
 
           // check if texture has been registered
@@ -614,6 +679,62 @@ function JsonModel(name, rawModel, texturesReference) {
   // add group
 
   this.add(group)
+
+
+  // methods
+
+  var self = this
+
+
+  // getCenter
+
+  this.getCenter = function() {
+
+    var group = self.children[0]
+
+
+    // compute absolute bounding box
+
+    var box = {
+      minx: 0, miny: 0, minz: 0,
+      maxx: 0, maxy: 0, maxz: 0
+    }
+
+    for (var i = 0; i < group.children.length; i++) {
+
+      var pivot = group.children[i]
+      var mesh = pivot.children[0]
+
+      for (var j = 0; j < mesh.geometry.vertices.length; j++) {
+
+        // convert vertex coordinates to world coordinates
+
+        var vertex = mesh.geometry.vertices[j].clone()
+        var abs = mesh.localToWorld(vertex)
+
+        // update bounding box
+
+        if (abs.x < box.minx) box.minx = abs.x
+        if (abs.y < box.miny) box.miny = abs.y
+        if (abs.z < box.minz) box.minz = abs.z
+
+        if (abs.x > box.maxx) box.maxx = abs.x
+        if (abs.y > box.maxy) box.maxy = abs.y
+        if (abs.z > box.maxz) box.maxz = abs.z
+
+      }
+
+    }
+
+    // return the center of the bounding box
+
+    return new THREE.Vector3(
+      (box.minx + box.maxx) / 2,
+      (box.miny + box.maxy) / 2,
+      (box.minz + box.maxz) / 2
+    )
+
+  }
 
 
 }
