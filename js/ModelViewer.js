@@ -1,3 +1,6 @@
+/**
+ *  @author Fizzy / https://github.com/fizzy81
+ */
 
 
 /**
@@ -19,6 +22,7 @@ function ModelViewer(container) {
 
   this.container.appendChild(this.element)
 
+  // get element dimensions
   var rect = this.element.getBoundingClientRect()
 
 
@@ -47,12 +51,32 @@ function ModelViewer(container) {
   light.position.set(1, 8, -2)
   this.scene.add(light)
 
-
   light = new THREE.AmbientLight(0xf3f3f3)
   this.scene.add(light)
 
 
-  // methods
+  // renderer
+
+  this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+  this.renderer.setSize(rect.width, rect.height)
+
+
+  // controls
+
+  this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement)
+  this.controls.enableDamping = true
+  this.controls.dampingFactor = 0.2
+  this.controls.zoomSpeed = 1.4
+  this.controls.rotateSpeed = 0.6
+  this.controls.enableKeys = false
+
+
+  // append viewer
+
+  this.element.appendChild(this.renderer.domElement)
+
+
+  // view methods
 
   var self = this
 
@@ -60,7 +84,9 @@ function ModelViewer(container) {
   // draw
 
   this.draw = function() {
+
     self.renderer.render(self.scene, self.camera)
+
   }
 
 
@@ -88,27 +114,6 @@ function ModelViewer(container) {
     self.renderer.setSize(rect.width, rect.height)
 
   }
-
-
-  // renderer
-
-  this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-  this.renderer.setSize(rect.width, rect.height)
-
-
-  // controls
-
-  this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement)
-  this.controls.enableDamping = true
-  this.controls.dampingFactor = 0.2
-  this.controls.zoomSpeed = 1.4
-  this.controls.rotateSpeed = 0.6
-  this.controls.enableKeys = false
-
-
-  // append viewer
-
-  this.element.appendChild(this.renderer.domElement)
 
 
   // models
@@ -358,7 +363,7 @@ function JsonModel(name, rawModel, texturesReference) {
   }
 
 
-  // get textures or throw an error if the "textures" property can't be found
+  // get textures and handle animated textures
 
   var textures = {}
   var references = []
@@ -388,28 +393,32 @@ function JsonModel(name, rawModel, texturesReference) {
 
         references.push(key)
 
+        // handle animated textures
         if (reference.hasOwnProperty('mcmeta')) {
 
+          // parse mcmeta
           try {
             var mcmeta = JSON.parse(reference.mcmeta)
           } catch (e) {
             throw 'Couldn\'t parse mcmeta for texture "' + textureName + '". ' + e.message + '.'
           }
 
-          // check
+          // check property
           if (!mcmeta.hasOwnProperty('animation'))
             throw 'Couldn\'t find the "animation" property in mcmeta for texure "' + textureName + '"'
 
-
+          // image buffer to access width and height from dataURL
           var imageBuffer = new Image()
           imageBuffer.src = reference.texture
 
           var width = imageBuffer.width
           var height = imageBuffer.height
 
+          // check if dimensions are valid
           if (height % width != 0)
             throw 'Image dimensions are invalid for texture "' + textureName + '".'
 
+          // get frames from mcmeta or generate them
           var frames = []
 
           if (mcmeta.animation.hasOwnProperty('frames')) {
@@ -420,8 +429,10 @@ function JsonModel(name, rawModel, texturesReference) {
             }
           }
 
+          // default value for frametime
           var frametime = mcmeta.animation.frametime || 1
 
+          // uniform animation frames
           var animation = []
 
           for (var i = 0; i < frames.length; i++) {
@@ -435,15 +446,19 @@ function JsonModel(name, rawModel, texturesReference) {
             }
           }
 
+          // number of vertical frames
           var numberOfImages = height/width
 
+          // register animation
           animations.push({height: numberOfImages, frames: animation, currentFrame: 0})
           animated.push(references.length - 1)
 
+          // split frames
           var images = []
 
           for (var i = 0; i < height/width; i++) {
 
+            // workspace
             var canvas = document.createElement('canvas')
             canvas.width = width
             canvas.height = width
@@ -455,16 +470,20 @@ function JsonModel(name, rawModel, texturesReference) {
 
           }
 
+          // register textures
           textures[key] = images
 
         } else {
 
+          // register texture
           textures[key] = reference.texture
 
         }
 
       } else {
+
         throw 'Couldn\'t find matching texture for texture reference "' + textureName + '".'
+
       }
 
     })
@@ -480,37 +499,51 @@ function JsonModel(name, rawModel, texturesReference) {
 
   var materials = []
 
+  // final material is made of several different materials, one for each texture
   references.forEach(function(ref, index) {
 
+    // if animated texture, get the first frame
     var image = textures[ref] instanceof Array ? textures[ref][0] : textures[ref]
 
+    // create three js texture from image
     var loader = new THREE.TextureLoader()
     var texture = loader.load(image)
+
+    // sharp pixels and smooth edges
     texture.magFilter = THREE.NearestFilter
     texture.minFilter = THREE.LinearFilter
+
+    // map texture to material, keep transparency and fix transparent z-fighting
     var mat = new THREE.MeshLambertMaterial({map: texture, transparent: true, alphaTest: 0.5})
+
     materials.push(mat)
 
+    // if animated texture
     if (textures[ref] instanceof Array) {
 
+      // get texture array and animation frames
       var images = textures[ref]
       var animation = animations[animated.indexOf(index)]
 
+      // keep scope
       ;(function(material, images, animation) {
 
+        // recursively called with a setTimeout
         var animateTexture = function() {
 
           var frame = animation.frames[animation.currentFrame]
+
           material.map.image.src = images[frame.index]
           animation.currentFrame = animation.currentFrame < animation.frames.length - 1 ? animation.currentFrame + 1 : 0
 
           window.setTimeout(function() {
-            requestAnimationFrame(animateTexture)
-          }, frame.time*50)
+            window.requestAnimationFrame(animateTexture)
+          }, frame.time*50) // multiplied by the length of a minecraft game tick (50ms)
 
         }
 
-        requestAnimationFrame(animateTexture)
+        // initialize recursion
+        window.requestAnimationFrame(animateTexture)
 
       })(mat, images, animation)
 
@@ -518,13 +551,16 @@ function JsonModel(name, rawModel, texturesReference) {
 
   })
 
+  // extra transparent material for hidden faces
   var transparentMaterial = new THREE.MeshBasicMaterial({transparent: true, opacity: 0, alphaTest: 0.5})
 
   materials.push(transparentMaterial)
 
+  // big material list from all the other materials
   var material = new THREE.MeshFaceMaterial(materials)
 
 
+  // create geometry
 
   // get elements or throw an error if the "elements" property can't be found
 
@@ -637,15 +673,6 @@ function JsonModel(name, rawModel, texturesReference) {
           uv.forEach(function(e, pos) {if (typeof e != 'number' || e + 0.00001 < 0 || e - 0.00001 > 16) throw 'The "uv" property in for "' + face + '" face in element "' + index + '" is invalid (got "' + e + '" at index "' + pos + '").'})
 
           uv = uv.map(function(e) {return e/16})
-
-
-          // if texture is animated, match uvs
-
-          // if (animated.indexOf(textureIndex) >= 0) {
-          //   var animation = animations[animated.indexOf(textureIndex)]
-          //   uv[1] = uv[1] / animation.height
-          //   uv[3] = uv[3] / animation.height
-          // }
 
           // fix edges
           uv[0] += 0.0005
@@ -906,6 +933,7 @@ function JsonModel(name, rawModel, texturesReference) {
 
     if (option == 'block') {
 
+      // reset transformations
       group.rotation.set(0, 0, 0)
       group.position.set(0, 0, 0)
       group.scale.set(1, 1, 1)
@@ -921,6 +949,7 @@ function JsonModel(name, rawModel, texturesReference) {
       var pos = options.translation
       var scale = options.scale
 
+      // apply transformations
       group.rotation.set(rot[0] * Math.PI/180, rot[1] * Math.PI/180, rot[2] * Math.PI/180)
       group.position.set(pos[0], pos[1], pos[2])
       group.scale.set(scale[0] == 0 ? 0.00001 : scale[0], scale[1] == 0 ? 0.00001 : scale[1], scale[2] == 0 ? 0.00001 : scale[2])
