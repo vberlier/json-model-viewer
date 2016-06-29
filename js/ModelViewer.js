@@ -524,7 +524,7 @@ function JsonModel(name, rawModel, texturesReference) {
 
           // check
 
-          uv.forEach(function(e, pos) {if (typeof e != 'number' || e < 0 || e > 16) throw 'The "uv" property in for "' + face + '" face in element "' + index + '" is invalid (got "' + e + '" at index "' + pos + '").'})
+          uv.forEach(function(e, pos) {if (typeof e != 'number' || e + 0.00001 < 0 || e - 0.00001 > 16) throw 'The "uv" property in for "' + face + '" face in element "' + index + '" is invalid (got "' + e + '" at index "' + pos + '").'})
 
           uv = uv.map(function(e) {return e/16})
 
@@ -681,6 +681,48 @@ function JsonModel(name, rawModel, texturesReference) {
   this.add(group)
 
 
+  // register display options
+
+  var keys = ['thirdperson_righthand', 'thirdperson_lefthand', 'firstperson_righthand', 'firstperson_lefthand', 'gui', 'head', 'ground', 'fixed']
+
+  this.displayOptions = {}
+
+  for (var i = 0; i < keys.length; i++) {
+    this.displayOptions[keys[i]] = {rotation: [0, 0, 0], translation: [0, 0, 0], scale: [1, 1, 1]}
+  }
+
+  this.displayOptions.firstperson = this.displayOptions.firstperson_righthand
+  this.displayOptions.thirdperson = this.displayOptions.thirdperson_righthand
+
+  if (model.hasOwnProperty('display')) {
+
+    var display = model.display
+
+    for (var option in display) {
+      if (this.displayOptions.hasOwnProperty(option)) {
+
+        var fields = display[option]
+
+        for (var name in fields) {
+          if (this.displayOptions[option].hasOwnProperty(name)) {
+
+            var field = fields[name]
+
+            // check value
+            if (field.length != 3 || typeof field[0] != 'number' || typeof field[1] != 'number' || typeof field[2] != 'number')
+              throw '"' + name + '" property is invalid for display option "' + option + '".'
+
+            this.displayOptions[option][name] = field
+
+          }
+        }
+
+      }
+    }
+
+  }
+
+
   // methods
 
   var self = this
@@ -733,6 +775,38 @@ function JsonModel(name, rawModel, texturesReference) {
       (box.miny + box.maxy) / 2,
       (box.minz + box.maxz) / 2
     )
+
+  }
+
+
+  // applyDisplay
+
+  this.applyDisplay = function(option) {
+
+    var group = self.children[0]
+
+    if (option == 'block') {
+
+      group.rotation.set(0, 0, 0)
+      group.position.set(0, 0, 0)
+      group.scale.set(1, 1, 1)
+
+    } else {
+
+      if (!self.displayOptions.hasOwnProperty(option))
+        throw 'Display option is invalid.'
+
+      var options = self.displayOptions[option]
+
+      var rot = options.rotation
+      var pos = options.translation
+      var scale = options.scale
+
+      group.rotation.set(rot[0] * Math.PI/180, rot[1] * Math.PI/180, rot[2] * Math.PI/180)
+      group.position.set(pos[0], pos[1], pos[2])
+      group.scale.set(scale[0] == 0 ? 0.00001 : scale[0], scale[1] == 0 ? 0.00001 : scale[1], scale[2] == 0 ? 0.00001 : scale[2])
+
+    }
 
   }
 

@@ -82,6 +82,7 @@ The `texture` property must be the image dataURL of the corresponding texture.
 
 `JsonModel` objects inherit from `THREE.Object3D`, see the [three.js documentation](http://threejs.org/docs/index.html#Reference/Core/Object3D) for more information.
 
-Method         | Description
--------------- | ---------------------------------------------------------------------------
-`.getCenter()` | Returns the center of the model's bounding box as a `THREE.Vector3` object.
+Method                  | Description
+----------------------- | -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+`.getCenter()`          | Returns the center of the model's bounding box as a `THREE.Vector3` object.
+`.applyDisplay(option)` | Applies a transformation specified in the `display` section of the model. The `option` parameter can be `thirdperson_righthand` or `thirdperson`, `thirdperson_lefthand`, `firstperson_righthand` or `firstperson`, `firstperson_lefthand`, `gui`, `head`, `ground`, `fixed` and `block`.
