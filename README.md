@@ -74,9 +74,21 @@ var textures = [
 var model = new JsonModel('myModel', json, textures)
 ```
 
-The `name` must match the file name, regardless of the folder in which it is. This means that `folderA/myTexture` and `folderB/myTexture` will both use the texture named `myTexture`, even if the original textures are not the same.
+The `name` property must match the texture's file name, regardless of the folder in which it is. This means that `folderA/myTexture` and `folderB/myTexture` will both use the texture named `myTexture`, even if the original textures are not the same.
 
 The `texture` property must be the image dataURL of the corresponding texture.
+
+#### Animated textures
+
+If the texture is an animated texture, the .mcmeta file must be provided as well. For instance, if a model has only one animated texture, the `textures` Array will look like this:
+
+```javascript
+var textures = [{name: 'animatedTexture', texture: textureDataURL, mcmeta: textureMcmeta}]
+```
+
+The `mcmeta` property must be a JSON string that contains the content of the mcmeta file of the texture.
+
+Note that the viewer doesn't support frame interpolation.
 
 #### Methods
 
