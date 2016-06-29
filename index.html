@@ -7,7 +7,7 @@
 
     <style>
       body {
-        font-family: 'Roboto', arial, sans-serif;
+        font-family: arial, sans-serif;
         font-size: 16px;
         line-height: 1.6;
         position: absolute;
@@ -19,7 +19,7 @@
       }
       #wrapper {
         position: absolute;
-        top: 0; left: 0; right: 0; bottom: 0;
+        top: 0; left: 0; right: 340px; bottom: 0;
         width: auto;
         height: auto;
         background: rgba(250,250,250,1);
@@ -33,17 +33,18 @@
       }
 
       /* top right section */
-      .topright {
-        display: inline-block;
+      .sidebar {
         position: absolute;
         right: 0;
-        margin: 15px;
+        top: 0;
+        bottom: 0;
+        height: auto;
+        width: 300px;
         background-color: #fff;
         padding: 30px;
-        text-align: right;
         color: #888;
-        border-radius: 5px;
         box-shadow: 0px 1px 8px -2px rgba(0,0,0,0.4);
+        overflow: auto;
       }
       h1 {
         margin: 0;
@@ -68,6 +69,7 @@
       }
       table {
         width: 100%;
+        margin-bottom: 30px;
       }
       table, th, td {
         border: 1px #cfcfcf solid;
@@ -90,7 +92,7 @@
         font-size: 0.9em;
         font-family: monospace;
         color: #999;
-        max-width: 100px;
+        max-width: 120px;
         min-width: 18px;
         height: 18px;
         padding: 2px;
@@ -137,7 +139,7 @@
 
     </div>
 
-    <div class="topright">
+    <div class="sidebar">
       <h1>Minecraft json model viewer - <a href="https://github.com/fizzy81">Fizzy</a></h1>
       <a href="https://github.com/fizzy81/json-model-viewer">Repository</a>
       <section>
@@ -157,8 +159,6 @@
             <td>Scroll</td><td>Zoom</td>
           </tr>
         </table>
-      </section>
-      <section>
         <p><b>Grid options</b></p>
         <ul>
           <li>
@@ -194,6 +194,10 @@
           </li>
         </ul>
       </section>
+    </div>
+
+    <div class="">
+
     </div>
 
     <!-- Requires three.js and OrbitControls.js -->
