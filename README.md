@@ -23,7 +23,7 @@ Use `new ModelViewer(element)` to create a new viewer. `element` must be a DOM e
 #### Methods
 
 Method                 | Description
----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------
+---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------
 `.load(model)`         | Loads a model in the viewer. `model` must be a `JsonModel` object.
 `.get(name)`           | Returns the model with the name `name`.
 `.getAll()`            | Returns an Array with all the loaded models.
@@ -34,11 +34,11 @@ Method                 | Description
 `.show(name)`          | Sets the `visible` property to `true` for the model with the name `name`.
 `.showAll()`           | Sets the `visible` property to `true` for all the loaded models.
 `.lookAt(name)`        | Moves the camera toward the model with the name `name`.
-`.showGrid()`          | Displays the grid 16x16 floor grid.
-`.hideGrid()`          | Hides the grid 16x16 floor grid.
-`.setGridColor(color)` | Sets the grid color. `color` must be a number, usually written in hexadecimal (i.e. red: 0xff0000).
-`.resize()`            | Updates the size and the aspect ratio of the viewer. Usualy bound to the `resize` event of the `window` when the viewer takes the whole page.
-`.reset()`             | Updates the size and the aspect ratio of the viewer. Usualy bound to the `resize` event of the `window` when the viewer takes the whole page.
+`.showGrid()`          | Displays the floor grid.
+`.hideGrid()`          | Hides the floor grid.
+`.setGridColor(color)` | Sets the grid color. `color` must be a number, usually written in hexadecimal (i.e. red: `0xff0000`).
+`.resize()`            | Updates the size and the aspect ratio of the viewer. Usualy bound to the `resize` event of the `window` if the viewer takes the whole page.
+`.reset()`             | Resets the camera.
 
 ### JsonModel(name, json, textures)
 
