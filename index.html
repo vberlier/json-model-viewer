@@ -17,6 +17,7 @@
         padding: 0;
         color: #888;
         box-sizing: border-box;
+        overflow: hidden;
       }
       #wrapper {
         position: absolute;
@@ -61,9 +62,9 @@
         color: #4996c7;
         display: inline-block;
         text-decoration: none;
-        -webkit-transition: all 0.16s ease-out;
-        -o-transition: all 0.16s ease-out;
-        transition: all 0.16s ease-out;
+        -webkit-transition: color 0.16s ease-out;
+        -o-transition: color 0.16s ease-out;
+        transition: color 0.16s ease-out;
         cursor: pointer;
       }
       a:hover {
@@ -83,7 +84,6 @@
       }
       th, td {
         padding: 5px 10px;
-        position: relative;
         overflow: hidden;
       }
       tr:first-child {
@@ -123,9 +123,9 @@
         background: #e3e3e3;
         border-radius: 2px;
         cursor: pointer;
-        -webkit-transition: all 0.16s ease-out;
-        -o-transition: all 0.16s ease-out;
-        transition: all 0.16s ease-out;
+        -webkit-transition: color 0.16s ease-out;
+        -o-transition: color 0.16s ease-out;
+        transition: color 0.16s ease-out;
         font-size: 1em;
         text-shadow: none;
         -webkit-transform: translateY(-3px);
@@ -257,6 +257,24 @@
       }
       .primary:hover {
         background: #347eaf;
+      }
+      #textures td {
+        position: relative;
+      }
+      @media screen and (max-width: 1280px), screen and (max-height: 720px) {
+        #wrapper {
+          right: 300px;
+        }
+        .sidebar {
+          font-size: 14px;
+          width: 260px;
+        }
+        input {
+          max-width: 90px;
+        }
+        .modal {
+          top: 40px;
+        }
       }
       /* end of demo section */
     </style>
