@@ -457,12 +457,17 @@
       function loadthing() {
         try {
           var newmodel = new JsonModel('demo', modelLoader.json, modelLoader.textures)
-          viewer.remove('demo')
+          try {
+            viewer.remove('demo')
+          } catch (e) {
+            console.log(e.message)
+          }
           model = newmodel
           viewer.load(model)
           document.querySelector('.overlay').setAttribute('style', 'display: none;')
         } catch (e) {
           window.alert('Error: ' + e.message)
+          console.log(e.message)
         }
       }
     </script>
@@ -485,14 +490,20 @@
 
     <script type="text/javascript">
 
-      var container = document.getElementById('wrapper')
-      var viewer = new ModelViewer(container)
+      var viewer, container, model
 
-      window.addEventListener('resize', viewer.resize)
+      window.onload = function() {
 
-      var model = new JsonModel('demo', json, [{name: 'cluckalor', texture: texture, mcmeta: mcmeta}])
+        container = document.getElementById('wrapper')
+        viewer = new ModelViewer(container)
 
-      viewer.load(model)
+        window.addEventListener('resize', viewer.resize)
+
+        model = new JsonModel('demo', json, [{name: 'cluckalor', texture: texture, mcmeta: mcmeta}])
+
+        viewer.load(model)
+
+      }
 
     </script>
 
