@@ -43,15 +43,11 @@ function ModelViewer(container) {
 
   var light
 
-  light = new THREE.DirectionalLight(0x080808)
-  light.position.set(2, 10, 1)
+  light = new THREE.AmbientLight(0xffffff, 0.97)
   this.scene.add(light)
 
-  light = new THREE.DirectionalLight(0x040404)
-  light.position.set(1, 8, -2)
-  this.scene.add(light)
-
-  light = new THREE.AmbientLight(0xf3f3f3)
+  light = new THREE.DirectionalLight(0xffffff, 0.1)
+  light.position.set(4, 10, 6)
   this.scene.add(light)
 
 
