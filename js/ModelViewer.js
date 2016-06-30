@@ -291,6 +291,17 @@ function ModelViewer(container) {
 
   }
 
+  // arrows
+
+  gridGeometry.vertices.push(new THREE.Vector3(-1, -8, 9))
+  gridGeometry.vertices.push(new THREE.Vector3(1, -8, 9))
+
+  gridGeometry.vertices.push(new THREE.Vector3(1, -8, 9))
+  gridGeometry.vertices.push(new THREE.Vector3(0, -8, 10))
+
+  gridGeometry.vertices.push(new THREE.Vector3(0, -8, 10))
+  gridGeometry.vertices.push(new THREE.Vector3(-1, -8, 9))
+
   var grid = new THREE.LineSegments(gridGeometry, gridMaterial)
   grid.visible = true
 
