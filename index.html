@@ -490,20 +490,16 @@
 
     <script type="text/javascript">
 
-      var viewer, container, model
 
-      window.onload = function() {
+      var container = document.getElementById('wrapper')
+      var viewer = new ModelViewer(container)
 
-        container = document.getElementById('wrapper')
-        viewer = new ModelViewer(container)
+      window.addEventListener('resize', viewer.resize)
 
-        window.addEventListener('resize', viewer.resize)
+      var model = new JsonModel('demo', json, [{name: 'cluckalor', texture: texture, mcmeta: mcmeta}])
 
-        model = new JsonModel('demo', json, [{name: 'cluckalor', texture: texture, mcmeta: mcmeta}])
+      viewer.load(model)
 
-        viewer.load(model)
-
-      }
 
     </script>
 
