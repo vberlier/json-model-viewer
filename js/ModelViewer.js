@@ -133,7 +133,7 @@ function ModelViewer(container) {
     var name = model.modelName
 
     if (Object.keys(self.models).indexOf(name) >= 0)
-      throw 'Model "' + name + '" is already loaded.'
+      throw new Error('Model "' + name + '" is already loaded.')
 
     self.scene.add(model)
     self.models[name] = model
@@ -148,7 +148,7 @@ function ModelViewer(container) {
   this.get = function(name) {
 
     if (!(Object.keys(self.models).indexOf(name) >= 0))
-      throw 'Model "' + name + '" is not loaded.'
+      throw new Error('Model "' + name + '" is not loaded.')
 
     return self.models[name]
 
@@ -169,7 +169,7 @@ function ModelViewer(container) {
   this.remove = function(name) {
 
     if (!(Object.keys(self.models).indexOf(name) >= 0))
-      throw 'Model "' + name + '" is not loaded.'
+      throw new Error('Model "' + name + '" is not loaded.')
 
     delete self.models[name]
 
@@ -209,7 +209,7 @@ function ModelViewer(container) {
   this.hide = function(name) {
 
     if (!(Object.keys(self.models).indexOf(name) >= 0))
-      throw 'Model "' + name + '" is not loaded.'
+      throw new Error('Model "' + name + '" is not loaded.')
 
     self.models[name].visible = false
     self.draw()
@@ -235,7 +235,7 @@ function ModelViewer(container) {
   this.show = function(name) {
 
     if (!(Object.keys(self.models).indexOf(name) >= 0))
-      throw 'Model "' + name + '" is not loaded.'
+      throw new Error('Model "' + name + '" is not loaded.')
 
     self.models[name].visible = true
     self.draw()
@@ -359,7 +359,7 @@ function JsonModel(name, rawModel, texturesReference) {
   try {
     var model = JSON.parse(rawModel)
   } catch (e) {
-    throw 'Couldn\'t parse json model. ' + e.message + '.'
+    throw new Error('Couldn\'t parse json model. ' + e.message + '.')
   }
 
 
@@ -400,12 +400,12 @@ function JsonModel(name, rawModel, texturesReference) {
           try {
             var mcmeta = JSON.parse(reference.mcmeta)
           } catch (e) {
-            throw 'Couldn\'t parse mcmeta for texture "' + textureName + '". ' + e.message + '.'
+            throw new Error('Couldn\'t parse mcmeta for texture "' + textureName + '". ' + e.message + '.')
           }
 
           // check property
           if (!mcmeta.hasOwnProperty('animation'))
-            throw 'Couldn\'t find the "animation" property in mcmeta for texure "' + textureName + '"'
+            throw new Error('Couldn\'t find the "animation" property in mcmeta for texure "' + textureName + '"')
 
           // image buffer to access width and height from dataURL
           var imageBuffer = new Image()
@@ -416,7 +416,7 @@ function JsonModel(name, rawModel, texturesReference) {
 
           // check if dimensions are valid
           if (height % width != 0)
-            throw 'Image dimensions are invalid for texture "' + textureName + '".'
+            throw new Error('Image dimensions are invalid for texture "' + textureName + '".')
 
           // get frames from mcmeta or generate them
           var frames = []
@@ -441,7 +441,7 @@ function JsonModel(name, rawModel, texturesReference) {
               animation.push({index: frame, time:frametime})
             } else {
               if (!frame.hasOwnProperty('index'))
-                throw 'Invalid animation frame at index "' + i + '" in mcmeta for texture "' + textureName + '".'
+                throw new Error('Invalid animation frame at index "' + i + '" in mcmeta for texture "' + textureName + '".')
               animation.push({index: frame.index, time: frame.time || frametime})
             }
           }
@@ -482,7 +482,7 @@ function JsonModel(name, rawModel, texturesReference) {
 
       } else {
 
-        throw 'Couldn\'t find matching texture for texture reference "' + textureName + '".'
+        throw new Error('Couldn\'t find matching texture for texture reference "' + textureName + '".')
 
       }
 
@@ -490,7 +490,7 @@ function JsonModel(name, rawModel, texturesReference) {
 
   } else {
 
-    throw 'Couldn\'t find "textures" property.'
+    throw new Error('Couldn\'t find "textures" property.')
 
   }
 
@@ -569,7 +569,7 @@ function JsonModel(name, rawModel, texturesReference) {
   if (model.hasOwnProperty('elements')) {
     elements = model.elements
   } else {
-    throw 'Couldn\'t find "elements" property'
+    throw new Error('Couldn\'t find "elements" property')
   }
 
 
@@ -583,24 +583,24 @@ function JsonModel(name, rawModel, texturesReference) {
     // check properties
 
     if (!element.hasOwnProperty('from'))
-      throw 'Couldn\'t find "from" property for element "' + index + '".'
+      throw new Error('Couldn\'t find "from" property for element "' + index + '".')
     if (!(element['from'].length == 3))
-      throw '"from" property for element "' + index + '" is invalid.'
+      throw new Error('"from" property for element "' + index + '" is invalid.')
 
     if (!element.hasOwnProperty('to'))
-      throw 'Couldn\'t find "to" property for element "' + index + '".'
+      throw new Error('Couldn\'t find "to" property for element "' + index + '".')
     if (!(element['to'].length == 3))
-      throw '"to" property for element "' + index + '" is invalid.'
+      throw new Error('"to" property for element "' + index + '" is invalid.')
 
     for (var i = 0; i < 3; i++) {
       var f = element['from'][i]
       var t = element['to'][i]
       if (typeof f != 'number' || f < -16)
-        throw '"from" property for element "' + index + '" is invalid (got "' + f + '" for coordinate "' + ['x', 'y', 'z'][i] + '").'
+        throw new Error('"from" property for element "' + index + '" is invalid (got "' + f + '" for coordinate "' + ['x', 'y', 'z'][i] + '").')
       if (typeof t != 'number' || t > 32)
-        throw '"to" property for element "' + index + '" is invalid (got "' + t + '" for coordinate "' + ['x', 'y', 'z'][i] + '").'
+        throw new Error('"to" property for element "' + index + '" is invalid (got "' + t + '" for coordinate "' + ['x', 'y', 'z'][i] + '").')
       if (t - f < 0)
-        throw '"from" property is bigger than "to" property for coordinate "' + ['x', 'y', 'z'][i] + '" in element "' + index + '".'
+        throw new Error('"from" property is bigger than "to" property for coordinate "' + ['x', 'y', 'z'][i] + '" in element "' + index + '".')
     }
 
 
@@ -619,7 +619,7 @@ function JsonModel(name, rawModel, texturesReference) {
 
     // create geometry
 
-    var fix = 0.001 // if a value happens to be 0, the geometry becomes a plane and has 4 vertices instead of 12.
+    var fix = 0.001 // if a value happens to be 0, the geometry becomes a plane and will have 4 vertices instead of 12.
 
     var geometry = new THREE.BoxGeometry(width + fix, height + fix, length + fix)
     geometry.faceVertexUvs[0] = []
@@ -641,11 +641,11 @@ function JsonModel(name, rawModel, texturesReference) {
           // check properties
 
           if (!element.faces[face].hasOwnProperty('texture'))
-            throw 'Couldn\'t find "texture" property in for "' + face + '" face in element "' + index + '".'
+            throw new Error('Couldn\'t find "texture" property for "' + face + '" face in element "' + index + '".')
           if (!element.faces[face].hasOwnProperty('uv'))
-            throw 'Couldn\'t find "uv" property in for "' + face + '" face in element "' + index + '".'
+            throw new Error('Couldn\'t find "uv" property for "' + face + '" face in element "' + index + '".')
           if (element.faces[face].uv.length != 4)
-            throw 'The "uv" property in for "' + face + '" face in element "' + index + '" is invalid (got "' + element.faces[face].uv + '").'
+            throw new Error('The "uv" property for "' + face + '" face in element "' + index + '" is invalid (got "' + element.faces[face].uv + '").')
 
 
           // get texture index
@@ -657,7 +657,7 @@ function JsonModel(name, rawModel, texturesReference) {
           // check if texture has been registered
 
           if (textureIndex < 0)
-            throw 'The "texture" property in for "' + face + '" face in element "' + index + '" is invalid (got "' + ref + '").'
+            throw new Error('The "texture" property for "' + face + '" face in element "' + index + '" is invalid (got "' + ref + '").')
 
           geometry.faces[i*2].materialIndex = textureIndex
           geometry.faces[i*2+1].materialIndex = textureIndex
@@ -670,7 +670,7 @@ function JsonModel(name, rawModel, texturesReference) {
 
           // check
 
-          uv.forEach(function(e, pos) {if (typeof e != 'number' || e + 0.00001 < 0 || e - 0.00001 > 16) throw 'The "uv" property in for "' + face + '" face in element "' + index + '" is invalid (got "' + e + '" at index "' + pos + '").'})
+          uv.forEach(function(e, pos) {if (typeof e != 'number' || e + 0.00001 < 0 || e - 0.00001 > 16) throw new Error('The "uv" property for "' + face + '" face in element "' + index + '" is invalid (got "' + e + '" at index "' + pos + '").')})
 
           uv = uv.map(function(e) {return e/16})
 
@@ -694,7 +694,7 @@ function JsonModel(name, rawModel, texturesReference) {
             // check property
 
             if (!([0, 90, 180, 270].indexOf(amount) >= 0))
-              throw 'The "rotation" property in for "' + face + '" face in element "' + index + '" is invalid (got "' + amount + '").'
+              throw new Error('The "rotation" property for "' + face + '" face in element "' + index + '" is invalid (got "' + amount + '").')
 
             // rotate map
 
@@ -748,19 +748,19 @@ function JsonModel(name, rawModel, texturesReference) {
       // check properties
 
       if (!element.rotation.hasOwnProperty('origin'))
-        throw 'Couldn\'t find "origin" property in "rotation" for element "' + index + '".'
+        throw new Error('Couldn\'t find "origin" property in "rotation" for element "' + index + '".')
       if (!(element.rotation.origin.length == 3))
-        throw '"origin" property in "rotation" for element "' + index + '" is invalid.'
+        throw new Error('"origin" property in "rotation" for element "' + index + '" is invalid.')
 
       if (!element.rotation.hasOwnProperty('axis'))
-        throw 'Couldn\'t find "axis" property in "rotation" for element "' + index + '".'
+        throw new Error('Couldn\'t find "axis" property in "rotation" for element "' + index + '".')
       if (!((['x', 'y', 'z']).indexOf(element.rotation.axis) >= 0))
-        throw '"axis" property in "rotation" for element "' + index + '" is invalid.'
+        throw new Error('"axis" property in "rotation" for element "' + index + '" is invalid.')
 
       if (!element.rotation.hasOwnProperty('angle'))
-        throw 'Couldn\'t find "angle" property in "rotation" for element "' + index + '".'
+        throw new Error('Couldn\'t find "angle" property in "rotation" for element "' + index + '".')
       if (!(([45, 22.5, 0, -22.5, -45]).indexOf(element.rotation.angle) >= 0))
-        throw '"angle" property in "rotation" for element "' + index + '" is invalid.'
+        throw new Error('"angle" property in "rotation" for element "' + index + '" is invalid.')
 
 
       // get origin, axis and angle
@@ -856,7 +856,7 @@ function JsonModel(name, rawModel, texturesReference) {
 
             // check value
             if (field.length != 3 || typeof field[0] != 'number' || typeof field[1] != 'number' || typeof field[2] != 'number')
-              throw '"' + name + '" property is invalid for display option "' + option + '".'
+              throw new Error('"' + name + '" property is invalid for display option "' + option + '".')
 
             this.displayOptions[option][name] = field
 
@@ -941,7 +941,7 @@ function JsonModel(name, rawModel, texturesReference) {
     } else {
 
       if (!self.displayOptions.hasOwnProperty(option))
-        throw 'Display option is invalid.'
+        throw new Error('Display option is invalid.')
 
       var options = self.displayOptions[option]
 

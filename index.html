@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="app">
+<html>
   <head>
 
     <meta charset="utf-8">
@@ -15,6 +15,7 @@
         height: 100%;
         margin: 0;
         padding: 0;
+        color: #888;
         box-sizing: border-box;
       }
       #wrapper {
@@ -51,6 +52,11 @@
         font-size: 1.1em;
         font-weight: normal;
       }
+      h2 {
+        margin: 0;
+        font-size: 1.3em;
+        font-weight: normal;
+      }
       a {
         color: #4996c7;
         display: inline-block;
@@ -77,6 +83,8 @@
       }
       th, td {
         padding: 5px 10px;
+        position: relative;
+        overflow: hidden;
       }
       tr:first-child {
         width: 60%;
@@ -106,6 +114,28 @@
         transform: translateY(-3px);
         overflow: hidden;
       }
+      button, .input {
+        display: inline-block;
+        vertical-align: middle;
+        color: #777;
+        padding: 10px 20px;
+        border: none;
+        background: #e3e3e3;
+        border-radius: 2px;
+        cursor: pointer;
+        -webkit-transition: all 0.16s ease-out;
+        -o-transition: all 0.16s ease-out;
+        transition: all 0.16s ease-out;
+        font-size: 1em;
+        text-shadow: none;
+        -webkit-transform: translateY(-3px);
+        -ms-transform: translateY(-3px);
+        -o-transform: translateY(-3px);
+        transform: translateY(-3px);
+      }
+      button:hover, .input:hover {
+        background: #d3d3d3;
+      }
       ::selection {
         background-color: #1abaec;
         color: white;
@@ -126,6 +156,108 @@
         background: radial-gradient(ellipse at center, rgba(153,153,153,1) 0%, rgba(153,153,153,1) 40%, rgba(255,255,255,1) 46%, rgba(255,255,255,1) 100%);
         filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#999999', endColorstr='#ffffff', GradientType=1 );
       }
+      input[type=file] {
+      	width: 0.1px;
+      	height: 0.1px;
+      	opacity: 0;
+      	overflow: hidden;
+      	position: absolute;
+      	z-index: -1;
+      }
+      .overlay {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.3);
+        text-align: center;
+      }
+      .modal {
+        position: absolute;
+        width: 720px;
+        height: 460px;
+        top: 80px;
+        left: 0;
+        right: 0;
+        margin: auto;
+        background-color: #fff;
+        box-shadow: 0px 1px 8px -2px rgba(0,0,0,0.4);
+        border-radius: 5px;
+      }
+      .content {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: left;
+        box-sizing: border-box;
+        padding: 30px;
+        font-size: 1em;
+      }
+      .content footer {
+        text-align: right;
+        padding: 30px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: auto;
+      }
+      .modalcontent {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+      .content .left {
+        position: absolute;
+        left: 30px;
+        top: 30px;
+        width: 230px;
+      }
+      .content .right {
+        position: absolute;
+        top: 30px;
+        right: 30px;
+        width: 300px;
+        padding-left: 30px;
+        padding-bottom: 4px;
+        border-left: 1px #cfcfcf solid;
+      }
+      .input {
+        font-size: 0.9em;
+        padding: 6px 12px;
+        margin-left: 8px;
+      }
+      .modal ul {
+        margin: 0;
+        list-style-type: none;
+      }
+      .modal table {
+        margin: 0;
+      }
+      .incell {
+        position: absolute;
+        right: 0;
+        border-radius: 0;
+        transform: none;
+        top: 0;
+        padding-bottom: 20px;
+      }
+      .parentable {
+        position: relative;
+        height: 182px;
+        overflow: hidden;
+      }
+      .limitable {
+        height: 100%;
+        overflow-y: auto;
+      }
+      .primary {
+        color: #fff;
+        background: #5ca8d9;
+        margin-right: 10px;
+      }
+      .primary:hover {
+        background: #347eaf;
+      }
     </style>
 
     <title>Minecraft json model viewer - Fizzy</title>
@@ -144,20 +276,22 @@
       <a href="https://github.com/fizzy81/json-model-viewer">Repository</a>
       <section>
         <table>
-          <tr>
-            <th colspan="2">
-              Controls
-            </th>
-          </tr>
-          <tr>
-            <td>Left-click</td><td>Rotate</td>
-          </tr>
-          <tr>
-            <td>Right-click</td><td>Move</td>
-          </tr>
-          <tr>
-            <td>Scroll</td><td>Zoom</td>
-          </tr>
+          <tbody>
+            <tr>
+              <th colspan="2">
+                Controls
+              </th>
+            </tr>
+            <tr>
+              <td>Left-click</td><td>Rotate</td>
+            </tr>
+            <tr>
+              <td>Right-click</td><td>Move</td>
+            </tr>
+            <tr>
+              <td>Scroll</td><td>Zoom</td>
+            </tr>
+          </tbody>
         </table>
         <p><b>Grid options</b></p>
         <ul>
@@ -192,13 +326,143 @@
               <label for="displayOption">Display <input type="text" id="displayOption" value="block" onchange="if (['thirdperson_righthand', 'thirdperson_lefthand', 'firstperson_righthand', 'firstperson_lefthand', 'gui', 'head', 'ground', 'fixed', 'block', 'thirdperson', 'firstperson'].indexOf(this.value) >= 0) model.applyDisplay(this.value)"></label>
             </p>
           </li>
+          <li>
+            <p>
+              <a onclick="openModal()">Change model</a>
+            </p>
+          </li>
         </ul>
       </section>
     </div>
 
-    <div class="">
+    <div class="overlay" onclick="this.setAttribute('style', 'display: none;')" style="display: none;">
+      <div id="modal" class="modal">
+        <div class="content">
 
+          <header>
+            <h2 id="modaltitle">Load model</h2>
+          </header>
+
+          <div class="modalcontent">
+
+            <div class="left">
+              <b>Model</b>
+              <ul>
+                <li>
+                  <p>
+                    Json <label for="loadmodel" class="input">Choose file...</label><input type="file" accept=".json" id="loadmodel" onchange="loadjson(this.files[0])">
+                  </p>
+                </li>
+                <li>
+                  <table>
+                    <tbody id="models">
+
+                    </tbody>
+                  </table>
+                </li>
+              </ul>
+            </div>
+
+            <div class="right">
+              <b>Textures</b>
+              <ul>
+                <li>
+                  <p>
+                    Add texture <label for="loadtexture" class="input">Choose file...</label><input type="file" accept=".png" id="loadtexture" onchange="loadtexture(this.files)" multiple>
+                  </p>
+                </li>
+                <li>
+                  <div class="parentable">
+                    <div class="limitable">
+                      <table>
+                        <tbody id="textures">
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+
+          <footer>
+            <button type="button" class="primary" onclick="loadthing()">Load</button>
+            <button type="button" onclick="document.querySelector('.overlay').setAttribute('style', 'display: none;')">Close</button>
+          </footer>
+
+        </div>
+      </div>
     </div>
+
+    <!-- demo stuff -->
+    <script type="text/javascript">
+      document.getElementById('modal').addEventListener('click', function(e) {
+        e.stopPropagation()
+      })
+      var modelLoader = {
+        modelName: '',
+        json: '',
+        textures: []
+      }
+      function loadjson(file) {
+        var reader = new FileReader()
+        reader.onload = function(e) {
+          modelLoader.modelName = file.name
+          modelLoader.json = e.target.result
+          document.getElementById('models').innerHTML = '<tr><td>' + file.name + '</td></tr>'
+        }
+        reader.readAsText(file)
+        document.getElementById('loadmodel').value = ''
+      }
+      function loadtexture(files) {
+        for (var i = 0; i < files.length; i++) {
+          var file = files[i]
+          ;(function(file) {
+            var reader = new FileReader()
+            reader.onload = function(e) {
+              modelLoader.textures.push({name:file.name.split('.png')[0],texture:e.target.result})
+              document.getElementById('textures').innerHTML += '<tr><td>' + file.name + '<label for="loadmcmeta' + modelLoader.textures.length + '" class="input incell">mcmeta</label><input type="file" accept=".mcmeta" id="loadmcmeta' + modelLoader.textures.length + '" onchange="loadmcmeta(this.files[0], ' + (modelLoader.textures.length-1) + ')"></td></tr>'
+            }
+            reader.readAsDataURL(file)
+          })(file)
+        }
+        document.getElementById('loadtexture').value = ''
+      }
+      function loadmcmeta(file, index) {
+        var reader = new FileReader()
+        reader.onload = function(e) {
+          modelLoader.textures[index].mcmeta = e.target.result
+        }
+        reader.readAsText(file)
+        document.getElementById('loadmcmeta' + (index+1)).value = ''
+      }
+      function openModal() {
+        modelLoader = {
+          modelName: '',
+          json: '',
+          textures: []
+        }
+        document.getElementById('models').innerHTML = ''
+        document.getElementById('textures').innerHTML = ''
+        document.getElementById('loadmodel').value = ''
+        document.getElementById('loadtexture').value = ''
+        document.getElementById('modaltitle').innerHTML = 'Load model'
+        document.querySelector('.overlay').setAttribute('style', 'display: block;')
+      }
+      function loadthing() {
+        try {
+          var newmodel = new JsonModel('demo', modelLoader.json, modelLoader.textures)
+          viewer.remove('demo')
+          model = newmodel
+          viewer.load(model)
+          document.querySelector('.overlay').setAttribute('style', 'display: none;')
+        } catch (e) {
+          window.alert('Error: ' + e.message)
+        }
+      }
+    </script>
 
     <!-- Requires three.js and OrbitControls.js -->
     <script src="js/three.min.js"></script>
@@ -222,8 +486,6 @@
       var model = new JsonModel('demo', json, [{name: 'cluckalor', texture: texture, mcmeta: mcmeta}])
 
       viewer.load(model)
-
-
 
     </script>
 
