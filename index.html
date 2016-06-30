@@ -33,7 +33,7 @@
         filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fafafa', endColorstr='#d1d1d1', GradientType=1 );
       }
 
-      /* top right section */
+      /* demo section */
       .sidebar {
         position: absolute;
         right: 0;
@@ -258,6 +258,7 @@
       .primary:hover {
         background: #347eaf;
       }
+      /* end of demo section */
     </style>
 
     <title>Minecraft json model viewer - Fizzy</title>
@@ -271,6 +272,7 @@
 
     </div>
 
+    <!-- Demo gui -->
     <div class="sidebar">
       <h1>Minecraft json model viewer - <a href="https://github.com/fizzy81">Fizzy</a></h1>
       <a href="https://github.com/fizzy81/json-model-viewer">Repository</a>
@@ -395,8 +397,9 @@
         </div>
       </div>
     </div>
+    <!-- end of demo gui -->
 
-    <!-- demo stuff -->
+    <!-- demo js -->
     <script type="text/javascript">
       document.getElementById('modal').addEventListener('click', function(e) {
         e.stopPropagation()
@@ -463,6 +466,10 @@
         }
       }
     </script>
+    <!-- end of demo js -->
+
+
+    <!-- actual usage of the api -->
 
     <!-- Requires three.js and OrbitControls.js -->
     <script src="js/three.min.js"></script>
