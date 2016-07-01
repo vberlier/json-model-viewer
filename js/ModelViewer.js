@@ -287,7 +287,7 @@ function ModelViewer(container) {
 
   }
 
-  // arrows
+  // arrow
 
   gridGeometry.vertices.push(new THREE.Vector3(-1, -8, 9))
   gridGeometry.vertices.push(new THREE.Vector3(1, -8, 9))
@@ -540,8 +540,13 @@ function JsonModel(name, rawModel, texturesReference) {
 
           var frame = animation.frames[animation.currentFrame]
 
-          material.map.image.src = images[frame.index]
-          animation.currentFrame = animation.currentFrame < animation.frames.length - 1 ? animation.currentFrame + 1 : 0
+          // Prevent crashing with big animated textures
+          try {
+            material.map.image.src = images[frame.index]
+            animation.currentFrame = animation.currentFrame < animation.frames.length - 1 ? animation.currentFrame + 1 : 0
+          } catch (e) {
+            console.log(e.message)
+          }
 
           window.setTimeout(function() {
             window.requestAnimationFrame(animateTexture)
