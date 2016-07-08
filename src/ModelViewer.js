@@ -412,7 +412,7 @@ function JsonModel(name, rawModel, texturesReference) {
 
           // check property
           if (!mcmeta.hasOwnProperty('animation'))
-            throw new Error('Couldn\'t find the "animation" property in mcmeta for texure "' + textureName + '"')
+            throw new Error('Couldn\'t find the "animation" property in mcmeta for texture "' + textureName + '"')
 
           // image buffer to access width and height from dataURL
           var imageBuffer = new Image()
