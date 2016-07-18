@@ -186,7 +186,7 @@ function ModelViewer(container) {
 
   this.removeAll = function() {
 
-    for (var i = 0; i < self.scene.children.length; i++) {
+    for (var i = self.scene.children.length - 1; i >= 0; i--) {
       var child = self.scene.children[i]
       if (child instanceof JsonModel) {
         self.scene.remove(child)
