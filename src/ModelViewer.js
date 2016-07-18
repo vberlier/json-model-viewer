@@ -172,6 +172,7 @@ function ModelViewer(container) {
     for (var i = 0; i < self.scene.children.length; i++) {
       var child = self.scene.children[i]
       if (child instanceof JsonModel && child.modelName == name) {
+        child.animationLoop = false
         self.scene.remove(child)
         break
       }
@@ -189,6 +190,7 @@ function ModelViewer(container) {
     for (var i = self.scene.children.length - 1; i >= 0; i--) {
       var child = self.scene.children[i]
       if (child instanceof JsonModel) {
+        child.animationLoop = false
         self.scene.remove(child)
       }
     }
@@ -361,6 +363,11 @@ function JsonModel(name, rawModel, texturesReference) {
   this.modelName = name
 
 
+  // track animation
+
+  this.animationLoop = true
+
+
   // parse model or throw an error if parsing fails
 
   try {
@@ -502,6 +509,11 @@ function JsonModel(name, rawModel, texturesReference) {
   }
 
 
+  // access this.animationLoop
+
+  var self = this
+
+
   // generate material
 
   var materials = []
@@ -549,7 +561,8 @@ function JsonModel(name, rawModel, texturesReference) {
           }
 
           window.setTimeout(function() {
-            window.requestAnimationFrame(animateTexture)
+            if (self.animationLoop)
+              window.requestAnimationFrame(animateTexture)
           }, frame.time*50) // multiplied by the length of a minecraft game tick (50ms)
 
         }
