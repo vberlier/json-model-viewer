@@ -480,7 +480,7 @@ function JsonModel(name, rawModel, texturesReference) {
             var ctx = canvas.getContext('2d')
             ctx.drawImage(imageBuffer, 0, -i*width)
 
-            images.push(canvas.toDataURL())
+            images.push(canvas.toDataURL('image/png'))
 
           }
 
