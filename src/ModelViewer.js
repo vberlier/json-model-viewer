@@ -350,7 +350,14 @@ function ModelViewer(container) {
  *  JsonModel
  *****************************/
 
-function JsonModel(name, rawModel, texturesReference) {
+function JsonModel(name, rawModel, texturesReference, clipUVs) {
+
+
+  // set default clip value to true
+
+  if (clipUVs === undefined) {
+    clipUVs = true
+  }
 
 
   // parent constructor
@@ -694,8 +701,21 @@ function JsonModel(name, rawModel, texturesReference) {
 
 
           // check
-
-          uv.forEach(function(e, pos) {if (typeof e != 'number' || e + 0.00001 < 0 || e - 0.00001 > 16) throw new Error('The "uv" property for "' + face + '" face in element "' + index + '" is invalid (got "' + e + '" at index "' + pos + '").')})
+          
+          if (clipUVs) {
+            uv.forEach(function(e, pos) {if (typeof e != 'number') throw new Error('The "uv" property for "' + face + '" face in element "' + index + '" is invalid (got "' + e + '" at index "' + pos + '").')})
+            uv.map(function(e) {
+              if (e + 0.00001 < 0) {
+                return 0
+              } else if (e - 0.00001 > 16) {
+                return 16
+              } else {
+                return e
+              }
+            })
+          } else {
+            uv.forEach(function(e, pos) {if (typeof e != 'number' || e + 0.00001 < 0 || e - 0.00001 > 16) throw new Error('The "uv" property for "' + face + '" face in element "' + index + '" is invalid (got "' + e + '" at index "' + pos + '").')})
+          }
 
           uv = uv.map(function(e) {return e/16})
 
