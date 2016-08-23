@@ -348,7 +348,7 @@
           </li>
           <li>
             <p>
-              <a onclick="openModal()">Change model</a>
+              <a onclick="openModal()">Load model</a>
             </p>
           </li>
         </ul>
@@ -504,8 +504,7 @@
 
     <!-- Demo -->
     <script src="demo/model.js"></script>
-    <script src="demo/texture.js"></script>
-    <script src="demo/mcmeta.js"></script>
+    <script src="demo/textures.js"></script>
 
     <script type="text/javascript">
 
@@ -515,7 +514,7 @@
 
       window.addEventListener('resize', viewer.resize)
 
-      var model = new JsonModel('demo', json, [{name: 'cluckalor', texture: texture, mcmeta: mcmeta}])
+      var model = new JsonModel('demo', json, textures)
 
       viewer.load(model)
 
