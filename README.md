@@ -40,7 +40,7 @@ Method                 | Description
 `.resize()`            | Updates the size and the aspect ratio of the viewer. Usualy bound to the `resize` event of the `window` if the viewer takes the whole page.
 `.reset()`             | Resets the camera.
 
-### JsonModel(name, json, textures)
+### JsonModel(name, json, textures, clipUVs)
 
 Use `new JsonModel(name, json, textures)` to create a group of [three.js meshs](http://threejs.org/docs/index.html#Reference/Objects/Mesh) from any minecraft json model. `name` must be a unique identifier and `json` a JSON string that contains a minecraft json model. `textures` must be an Array formatted as followed:
 
@@ -77,6 +77,8 @@ var model = new JsonModel('myModel', json, textures)
 The `name` property must match the texture's file name, regardless of the folder in which it is. This means that `folderA/myTexture` and `folderB/myTexture` will both use the texture named `myTexture`, even if the original textures are not the same.
 
 The `texture` property must be the image dataURL of the corresponding texture.
+
+The constructor can also take an optional argument. `clipUVs` is set to true by default, and will clip invalid uvs on the fly. If set to false, the constructor will throw an error if it encounters uv coordinates outside of the valid 0-16 range.
 
 #### Animated textures
 
