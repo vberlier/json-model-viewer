@@ -330,6 +330,16 @@
         <ul>
           <li>
             <p>
+              <label for="camera-pos">Position <input type="text" id="camera-pos" onchange="setCameraPosition(this.value)"></label>
+            </p>
+          </li>
+          <li>
+            <p>
+              <label for="camera-target">Target <input type="text" id="camera-target" onchange="setCameraTarget(this.value)"></label>
+            </p>
+          </li>
+          <li>
+            <p>
               <a onclick="viewer.reset()">Reset camera</a>
             </p>
           </li>
@@ -489,6 +499,16 @@
           console.log(e.message)
         }
       }
+      function setCameraPosition(input) {
+        viewer.camera.position.set.apply(
+          viewer.camera.position,
+          input.trim().split(' ').map(parseFloat)
+        )
+      }
+      function setCameraTarget(input) {
+        var pos = input.trim().split(' ').map(parseFloat)
+        viewer.controls.target = new THREE.Vector3(pos[0], pos[1], pos[2])
+      }
     </script>
     <!-- end of demo js -->
 
@@ -502,13 +522,11 @@
     <!-- Import ModelViewer.js -->
     <script src="src/ModelViewer.js"></script>
 
-    <!-- Demo -->
+    <!-- Using the model viewer -->
     <script src="demo/model.js"></script>
     <script src="demo/textures.js"></script>
 
     <script type="text/javascript">
-
-
       var container = document.getElementById('wrapper')
       var viewer = new ModelViewer(container)
 
@@ -517,7 +535,29 @@
       var model = new JsonModel('demo', json, textures)
 
       viewer.load(model)
+    </script>
 
+    <!-- hack just for the demo -->
+    <script type="text/javascript">
+
+      var campos = document.getElementById('camera-pos')
+      var camtarget = document.getElementById('camera-target')
+
+      var prevCamPos = new THREE.Vector3()
+      var prevCamtarget = new THREE.Vector3()
+
+      var originalDrawMethod = viewer.draw.bind(viewer)
+
+      viewer.draw = function () {
+        originalDrawMethod()
+        if (viewer.camera.position.equals(prevCamPos) && viewer.controls.target.equals(prevCamtarget)) return
+
+        prevCamPos = viewer.camera.position.clone()
+        prevCamtarget = viewer.controls.target.clone()
+
+        campos.value = prevCamPos.x + ' ' + prevCamPos.y + ' ' + prevCamPos.z
+        camtarget.value = prevCamtarget.x + ' ' + prevCamtarget.y + ' ' + prevCamtarget.z
+      }
 
     </script>
 
