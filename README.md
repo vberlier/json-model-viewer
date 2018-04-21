@@ -100,3 +100,7 @@ Method                  | Description
 ----------------------- | -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 `.getCenter()`          | Returns the center of the model's bounding box as a `THREE.Vector3` object.
 `.applyDisplay(option)` | Applies a transformation specified in the `display` section of the model. The `option` parameter can be `thirdperson_righthand` or `thirdperson`, `thirdperson_lefthand`, `firstperson_righthand` or `firstperson`, `firstperson_lefthand`, `gui`, `head`, `ground`, `fixed` and `block`.
+
+---
+
+License - [MIT](https://github.com/vberlier/json-model-viewer/blob/master/LICENSE)
