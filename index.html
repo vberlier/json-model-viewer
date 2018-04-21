@@ -74,6 +74,9 @@
         margin-top: 30px;
         text-align: left;
       }
+      hr {
+        border: 1px #eee solid;
+      }
       table {
         width: 100%;
         margin-bottom: 30px;
@@ -279,7 +282,7 @@
       /* end of demo section */
     </style>
 
-    <title>Minecraft json model viewer - Fizzy</title>
+    <title>Minecraft json model viewer</title>
 
   </head>
   <body>
@@ -292,8 +295,10 @@
 
     <!-- Demo gui -->
     <div class="sidebar">
-      <h1>Minecraft json model viewer - <a href="https://github.com/fizzy81">Fizzy</a></h1>
-      <a href="https://github.com/fizzy81/json-model-viewer">Repository</a>
+      <h1>Minecraft json model viewer</h1>
+      <a href="https://github.com/vberlier/json-model-viewer">Repository</a>
+      <hr>
+      <br>
       <section>
         <table>
           <tbody>
@@ -540,23 +545,34 @@
     <!-- hack just for the demo -->
     <script type="text/javascript">
 
-      var campos = document.getElementById('camera-pos')
-      var camtarget = document.getElementById('camera-target')
+      var camPosInput = document.getElementById('camera-pos')
+      var camTargetInput = document.getElementById('camera-target')
 
       var prevCamPos = new THREE.Vector3()
-      var prevCamtarget = new THREE.Vector3()
+      var prevCamTarget = new THREE.Vector3()
 
       var originalDrawMethod = viewer.draw.bind(viewer)
 
       viewer.draw = function () {
         originalDrawMethod()
-        if (viewer.camera.position.equals(prevCamPos) && viewer.controls.target.equals(prevCamtarget)) return
 
-        prevCamPos = viewer.camera.position.clone()
-        prevCamtarget = viewer.controls.target.clone()
+        var camPos = viewer.camera.position.clone()
+        camPos.x = Math.round(camPos.x * 1000) / 1000
+        camPos.y = Math.round(camPos.y * 1000) / 1000
+        camPos.z = Math.round(camPos.z * 1000) / 1000
 
-        campos.value = prevCamPos.x + ' ' + prevCamPos.y + ' ' + prevCamPos.z
-        camtarget.value = prevCamtarget.x + ' ' + prevCamtarget.y + ' ' + prevCamtarget.z
+        var camTarget = viewer.controls.target.clone()
+        camTarget.x = Math.round(camTarget.x * 1000) / 1000
+        camTarget.y = Math.round(camTarget.y * 1000) / 1000
+        camTarget.y = Math.round(camTarget.y * 1000) / 1000
+
+        if (camPos.equals(prevCamPos) && camTarget.equals(prevCamTarget)) return
+
+        camPosInput.value = prevCamPos.x + ' ' + prevCamPos.y + ' ' + prevCamPos.z
+        camTargetInput.value = prevCamTarget.x + ' ' + prevCamTarget.y + ' ' + prevCamTarget.z
+
+        prevCamPos = camPos
+        prevCamTarget = camTarget
       }
 
     </script>
